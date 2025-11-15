@@ -6,8 +6,11 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Portfolio | Developer',
-  description: 'Modern portfolio showcasing skills in React, Next.js, Python, and more',
+  title: 'Ashton Howard',
+  description: 'Ashton Howard\'s Portfolio',
+  icons: {
+    icon: '/favicon.png',
+  },
 }
 
 export default function RootLayout({
