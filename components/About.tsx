@@ -39,12 +39,12 @@ export default function About() {
             className="tron-border p-8 bg-tron-dark/30"
           >
             <p className={`text-lg mb-6 leading-relaxed ${theme === 'blue' ? 'text-tron-blue/90' : 'text-tron-red/90'}`}>
-              I'm a passionate full-stack developer who loves creating digital experiences that push boundaries.
+              I&apos;m a passionate full-stack developer who loves creating digital experiences that push boundaries.
               My journey in tech started with curiosity and has evolved into a deep passion for building
               innovative solutions.
             </p>
             <p className={`text-lg mb-6 leading-relaxed ${theme === 'blue' ? 'text-tron-blue/90' : 'text-tron-red/90'}`}>
-            When I'm not coding, you'll find me grinding through video games or carving fresh tracks on the mountain. These passions fuel my creativity and help me approach problems from unique angles.
+            When I&apos;m not coding, you&apos;ll find me grinding through video games or carving fresh tracks on the mountain. These passions fuel my creativity and help me approach problems from unique angles.
             </p>
             <p className={`text-lg leading-relaxed ${theme === 'blue' ? 'text-tron-blue/90' : 'text-tron-red/90'}`}>
               I believe in writing clean, maintainable code and staying on the cutting edge of

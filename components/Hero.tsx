@@ -62,7 +62,7 @@ export default function Hero() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            Welcome to the Grid, I'm Ashton Howard.
+            Welcome to the Grid, I&apos;m Ashton Howard.
           </motion.h1>
           
           <motion.div

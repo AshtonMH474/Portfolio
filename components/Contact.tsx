@@ -52,7 +52,7 @@ export default function Contact() {
             style={{ boxShadow: theme === 'blue' ? '0 0 10px rgba(0, 255, 255, 0.8)' : '0 0 10px rgba(255, 0, 64, 0.8)' }} 
           />
           <p className={`text-lg ${theme === 'blue' ? 'text-tron-blue/80' : 'text-tron-red/80'}`}>
-            Have a project in mind? Let's build something amazing together.
+            Have a project in mind? Let&apos;s build something amazing together.
           </p>
         </motion.div>
 
@@ -152,12 +152,12 @@ export default function Contact() {
             className="space-y-8"
           >
             <div className="tron-border p-8 bg-tron-dark/30">
-              <h3 className={`text-2xl font-semibold mb-6 ${theme === 'blue' ? 'text-tron-cyan' : 'text-tron-orange'}`}>Let's Connect</h3>
+              <h3 className={`text-2xl font-semibold mb-6 ${theme === 'blue' ? 'text-tron-cyan' : 'text-tron-orange'}`}>Let&apos;s Connect</h3>
               <p className={`mb-6 leading-relaxed ${theme === 'blue' ? 'text-tron-blue/80' : 'text-tron-red/80'}`}>
-                I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
+                I&apos;m always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
               </p>
               <p className={`leading-relaxed ${theme === 'blue' ? 'text-tron-blue/80' : 'text-tron-red/80'}`}>
-                Whether you're looking for a developer, want to collaborate, or just want to chat about video games or
+                Whether you&apos;re looking for a developer, want to collaborate, or just want to chat about video games or
                 the best snowboarding spots, feel free to reach out!
               </p>
             </div>
