@@ -57,7 +57,7 @@ export default function Hero() {
           transition={{ duration: 0.8 }}
         >
           <motion.h1
-            className="text-5xl font-bold mb-6 "
+            className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 "
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
