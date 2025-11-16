@@ -50,10 +50,10 @@ export default function Navigation() {
       animate={{ y: 0 }}
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         scrolled 
-          ? `bg-tron-darker/90 backdrop-blur-sm border-b ${theme === 'blue' ? 'border-tron-blue/30' : 'border-tron-red/30'}` 
-          : theme === 'red' 
-            ? 'bg-tron-red-darker/80 backdrop-blur-sm border-b border-tron-red/20'
-            : ''
+          ? `bg-tron-darker/90 backdrop-blur-sm border-b ${
+              theme === 'blue' ? 'border-tron-blue/30' : 'border-tron-red/30'
+            }`
+          : '' 
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
