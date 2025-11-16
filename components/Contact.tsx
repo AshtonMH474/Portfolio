@@ -44,11 +44,11 @@ export default function Contact() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 glow-text">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 glow-text">
             Get In Touch
           </h2>
           <div 
-            className={`w-24 h-1 mx-auto mb-8 ${theme === 'blue' ? 'bg-tron-blue' : 'bg-tron-red'}`} 
+            className={`w-24 h-1 mx-auto mb-12 ${theme === 'blue' ? 'bg-tron-blue' : 'bg-tron-red'}`} 
             style={{ boxShadow: theme === 'blue' ? '0 0 10px rgba(0, 255, 255, 0.8)' : '0 0 10px rgba(255, 0, 64, 0.8)' }} 
           />
           <p className={`text-lg ${theme === 'blue' ? 'text-tron-blue/80' : 'text-tron-red/80'}`}>
