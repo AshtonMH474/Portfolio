@@ -8,7 +8,6 @@ A modern, Tron-themed portfolio website built with Next.js, React, TypeScript, a
 - ⚡ Built with Next.js 14 and React 18
 - 🎭 Smooth animations using Framer Motion
 - 📱 Fully responsive design
-- ⭐ Star Wars and Snowboarding themed elements
 - 🎯 Sections: Hero, About, Skills, Projects, Contact
 
 ## Tech Stack
@@ -47,7 +46,5 @@ npm run build
 npm start
 ```
 
-## License
 
-MIT
 

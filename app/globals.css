@@ -60,8 +60,6 @@ body {
   background-size: 50px 50px;
   pointer-events: none;
   z-index: 0;
-  animation: grid 20s linear infinite;
-  transition: background-image 0.3s ease;
 }
 
 [data-theme="blue"] .grid-background {
