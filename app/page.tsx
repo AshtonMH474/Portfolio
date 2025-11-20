@@ -9,6 +9,7 @@ import Contact from '@/components/Contact'
 import Navigation from '@/components/Navigation'
 import EnergyTrail from '@/components/EnergyTrail'
 import EnergyLines from '@/components/EnergyLines'
+import GridBackground from '@/components/GridBackground'
 
 import { useTheme } from '@/contexts/ThemeContext'
 
@@ -31,14 +32,9 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen">
-      {/* Animated grid background */}
-      <div className="grid-background" />
+      {/* SVG Grid background with energy pulses */}
+      <GridBackground />
       
-      {/* Energy lines moving across screen */}
-      <EnergyLines />
-      
-      {/* Energy trail following mouse cursor */}
-      <EnergyTrail />
       
       {/* Mouse follower glow effect */}
       <div 
