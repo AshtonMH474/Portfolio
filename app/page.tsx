@@ -7,8 +7,6 @@ import Skills from '@/components/Skills'
 import Projects from '@/components/Projects'
 import Contact from '@/components/Contact'
 import Navigation from '@/components/Navigation'
-import EnergyTrail from '@/components/EnergyTrail'
-import EnergyLines from '@/components/EnergyLines'
 import GridBackground from '@/components/GridBackground'
 
 import { useTheme } from '@/contexts/ThemeContext'
