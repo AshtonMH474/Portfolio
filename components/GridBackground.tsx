@@ -60,20 +60,25 @@ export default function GridBackground() {
       setFrameCount((prev) => {
         const newCount = prev + 1
         
-        // Spawn energy particles randomly along connections
-        if (newCount % 30 === 0 && energyNodes.length > 0) {
-          const randomNodeIndex = Math.floor(Math.random() * energyNodes.length)
-          const node = energyNodes[randomNodeIndex]
+        // Spawn energy particles deterministically along connections
+        const spawnInterval = dimensions.width < 768 ? 45 : 30 // Less frequent on mobile
+        if (newCount % spawnInterval === 0 && energyNodes.length > 0) {
+          // Deterministic node selection based on frame count
+          const nodeIndex = (newCount / spawnInterval) % energyNodes.length
+          const node = energyNodes[Math.floor(nodeIndex)]
           
           if (node.connections.length > 0) {
-            const randomConnIndex = Math.floor(Math.random() * node.connections.length)
-            const target = node.connections[randomConnIndex]
+            // Deterministic connection selection
+            const connIndex = Math.floor((newCount / spawnInterval) % node.connections.length)
+            const target = node.connections[connIndex]
             
-            // Create path for particle
+            // Create path for particle (supports diagonal paths)
             const dx = target.x - node.x
             const dy = target.y - node.y
             const distance = Math.sqrt(dx ** 2 + dy ** 2)
             const isHorizontal = Math.abs(dy) < 5
+            const isVertical = Math.abs(dx) < 5
+            const isDiagonal = !isHorizontal && !isVertical
             const segments = Math.floor(distance / 10)
             const path: Array<{ x: number; y: number }> = []
             
@@ -83,21 +88,27 @@ export default function GridBackground() {
               if (isHorizontal) {
                 x = node.x + dx * t
                 y = node.y + Math.sin(t * Math.PI * 4) * 3
-              } else {
+              } else if (isVertical) {
                 x = node.x + Math.sin(t * Math.PI * 4) * 3
                 y = node.y + dy * t
+              } else {
+                // Diagonal path with wave effect
+                x = node.x + dx * t + Math.sin(t * Math.PI * 4) * 2
+                y = node.y + dy * t + Math.cos(t * Math.PI * 4) * 2
               }
               path.push({ x, y })
             }
             
+            // Deterministic speed based on node index
+            const speedVariation = (nodeIndex % 5) / 100 // 0.015 to 0.019
             const particle: EnergyParticle = {
               x: node.x,
               y: node.y,
               progress: 0,
               path,
-              speed: 0.015 + Math.random() * 0.01,
-              nodeIndex: randomNodeIndex,
-              connIndex: randomConnIndex,
+              speed: 0.015 + speedVariation,
+              nodeIndex: Math.floor(nodeIndex),
+              connIndex,
             }
             
             setEnergyParticles((prev) => [...prev, particle])
@@ -136,11 +147,14 @@ export default function GridBackground() {
       
       // Update ripple animations
       setGridRipples((prev) =>
-        prev.map((ripple) => ({
-          ...ripple,
-          radius: (frameCount - ripple.startFrame) * 2,
-          opacity: Math.max(0, ripple.opacity - 0.02),
-        })).filter((r) => r.opacity > 0)
+        prev.map((ripple) => {
+          const age = Math.max(0, frameCount - ripple.startFrame)
+          return {
+            ...ripple,
+            radius: age * 2,
+            opacity: Math.max(0, ripple.opacity - 0.02),
+          }
+        }).filter((r) => r.opacity > 0 && r.radius >= 0)
       )
       
       animationFrame = requestAnimationFrame(animate)
@@ -183,14 +197,24 @@ export default function GridBackground() {
     }
     
     const nodes: EnergyNode[] = []
-    const nodeSpacing = 4 // Every 4th grid intersection
+    // Adaptive spacing based on screen size
+    const isMobile = dimensions.width < 768
+    const nodeSpacing = isMobile ? 5 : 4
     
-    // First pass: create all nodes
+    // Deterministic pattern function for diagonal patterns
+    const patternValue = (i: number, j: number) => {
+      return ((i * 17 + j * 23) % 100) / 100
+    }
+    
+    // Create diagonal pattern - nodes arranged in diagonal stripes
     const nodePositions: Array<{ x: number; y: number; i: number; j: number }> = []
     for (let i = nodeSpacing; i < hLines.length; i += nodeSpacing) {
       for (let j = nodeSpacing; j < vLines.length; j += nodeSpacing) {
-        // Random chance to create a node (70% chance)
-        if (Math.random() > 0.3) {
+        // Create diagonal stripe pattern: (i + j) creates diagonal lines
+        const diagonalIndex = (i + j) % (nodeSpacing * 2)
+        // Create alternating diagonal bands
+        const pattern = patternValue(i, j)
+        if (diagonalIndex < nodeSpacing && pattern > 0.2) {
           const x = vLines[j]
           const y = hLines[i]
           nodePositions.push({ x, y, i, j })
@@ -198,7 +222,7 @@ export default function GridBackground() {
       }
     }
     
-    // Second pass: create nodes with connections only to existing nodes
+    // Second pass: create nodes with diagonal connections
     nodePositions.forEach((pos) => {
       const connections: Array<{ x: number; y: number }> = []
       
@@ -206,31 +230,47 @@ export default function GridBackground() {
       nodePositions.forEach((otherPos) => {
         if (otherPos.x === pos.x && otherPos.y === pos.y) return
         
-        const dx = Math.abs(otherPos.x - pos.x)
-        const dy = Math.abs(otherPos.y - pos.y)
+        const dx = otherPos.x - pos.x
+        const dy = otherPos.y - pos.y
+        const absDx = Math.abs(dx)
+        const absDy = Math.abs(dy)
         
-        // Only connect if it's perfectly horizontal or vertical (follows grid lines)
-        const isHorizontal = dy < 5 && dx > 0
-        const isVertical = dx < 5 && dy > 0
+        // Allow diagonal connections (45-degree angles) and nearby nodes
+        const isDiagonal = Math.abs(absDx - absDy) < 10 && absDx > 0 && absDy > 0
+        const isHorizontal = absDy < 5 && absDx > 0
+        const isVertical = absDx < 5 && absDy > 0
         
-        if (!isHorizontal && !isVertical) return
+        // Prefer diagonal connections for cool pattern
+        if (!isDiagonal && !isHorizontal && !isVertical) return
         
-        const distance = Math.sqrt(dx ** 2 + dy ** 2)
+        const distance = Math.sqrt(absDx ** 2 + absDy ** 2)
+        const maxDistance = gridSize * nodeSpacing * (isMobile ? 2 : 2.5)
         
-        // Connect if within reasonable distance and random chance
-        if (distance < gridSize * nodeSpacing * 2 && Math.random() > 0.6) {
-          connections.push({ x: otherPos.x, y: otherPos.y })
+        // Create diagonal connection patterns
+        if (distance < maxDistance) {
+          const connectionPattern = patternValue(pos.i, pos.j) + patternValue(otherPos.i, otherPos.j)
+          const maxConnections = isMobile ? 2 : 3
+          
+          // Prefer diagonal connections
+          if (isDiagonal && connectionPattern > 0.4 && connections.length < maxConnections) {
+            connections.push({ x: otherPos.x, y: otherPos.y })
+          } else if ((isHorizontal || isVertical) && connectionPattern > 0.6 && connections.length < maxConnections) {
+            connections.push({ x: otherPos.x, y: otherPos.y })
+          }
         }
       })
       
-      // Only add node if it has connections to actual existing nodes
+      // Only add node if it has connections
       if (connections.length > 0) {
+        const phase = (patternValue(pos.i, pos.j) * Math.PI * 2)
+        const energyLevel = 0.3 + patternValue(pos.i, pos.j) * 0.4
+        
         nodes.push({
           x: pos.x,
           y: pos.y,
-          phase: Math.random() * Math.PI * 2,
+          phase,
           connections,
-          energyLevel: Math.random(),
+          energyLevel,
           lastPulse: 0,
         })
       }
@@ -339,19 +379,25 @@ export default function GridBackground() {
       })}
       
       {/* Grid ripples from energy pulses */}
-      {gridRipples.map((ripple, i) => (
-        <circle
-          key={`ripple-${i}`}
-          cx={ripple.x}
-          cy={ripple.y}
-          r={ripple.radius}
-          fill="none"
-          stroke={pulseColor}
-          strokeWidth="2"
-          opacity={ripple.opacity * 0.4}
-          style={{ filter: `drop-shadow(0 0 8px ${pulseColor})` }}
-        />
-      ))}
+      {gridRipples.map((ripple, i) => {
+        // Ensure radius is never negative
+        const radius = Math.max(0, ripple.radius)
+        if (radius <= 0 || ripple.opacity <= 0) return null
+        
+        return (
+          <circle
+            key={`ripple-${i}`}
+            cx={ripple.x}
+            cy={ripple.y}
+            r={radius}
+            fill="none"
+            stroke={pulseColor}
+            strokeWidth="2"
+            opacity={ripple.opacity * 0.4}
+            style={{ filter: `drop-shadow(0 0 8px ${pulseColor})` }}
+          />
+        )
+      })}
 
       {/* Energy Nodes and Connections - Wavy energy flows through grid */}
       {energyNodes.map((node, nodeIndex) => {
@@ -415,13 +461,12 @@ export default function GridBackground() {
               const dy = target.y - node.y
               const distance = Math.sqrt(dx ** 2 + dy ** 2)
               
-              // Only draw if connection follows grid lines (horizontal or vertical)
+              // Support diagonal, horizontal, and vertical connections
               const isHorizontal = Math.abs(dy) < 5
               const isVertical = Math.abs(dx) < 5
+              const isDiagonal = !isHorizontal && !isVertical
               
-              if (!isHorizontal && !isVertical) return null
-              
-              // Create wavy path along grid line with more variation
+              // Create wavy path (works for all connection types)
               const segments = Math.floor(distance / 8)
               const points: Array<{ x: number; y: number }> = []
               const waveFrequency = 3 + Math.sin(nodeIndex * 0.5) * 2
@@ -434,9 +479,16 @@ export default function GridBackground() {
                 if (isHorizontal) {
                   x = node.x + dx * t
                   y = node.y + Math.sin(t * Math.PI * waveFrequency + frameCount * 0.05 + connIndex) * waveAmplitude
-                } else {
+                } else if (isVertical) {
                   x = node.x + Math.sin(t * Math.PI * waveFrequency + frameCount * 0.05 + connIndex) * waveAmplitude
                   y = node.y + dy * t
+                } else {
+                  // Diagonal path with spiral wave effect
+                  const angle = Math.atan2(dy, dx)
+                  const perpAngle = angle + Math.PI / 2
+                  const spiralWave = Math.sin(t * Math.PI * waveFrequency * 2 + frameCount * 0.05 + connIndex) * waveAmplitude
+                  x = node.x + dx * t + Math.cos(perpAngle) * spiralWave
+                  y = node.y + dy * t + Math.sin(perpAngle) * spiralWave
                 }
                 
                 points.push({ x, y })
